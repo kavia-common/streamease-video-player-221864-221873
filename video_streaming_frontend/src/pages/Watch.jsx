@@ -21,6 +21,11 @@ export default function Watch() {
     navigate(`/watch/${nextVideo.id}`);
   }
 
+  function onClickUpNext(targetVideo) {
+    // push new route, VideoPlayer will detect prop change and reload sources
+    navigate(`/watch/${targetVideo.id}`);
+  }
+
   return (
     <section className="player-wrap">
       <div>
@@ -40,7 +45,16 @@ export default function Watch() {
         </div>
         <div className="grid" style={{ gridTemplateColumns: '1fr' }}>
           {upNext.map((v) => (
-            <VideoCard key={v.id} video={v} />
+            <div
+              key={v.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => onClickUpNext(v)}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClickUpNext(v)}
+              style={{ outline: 'none' }}
+            >
+              <VideoCard video={v} />
+            </div>
           ))}
         </div>
       </aside>
