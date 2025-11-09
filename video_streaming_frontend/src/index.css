@@ -8,6 +8,11 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   overflow-x: hidden; /* prevent accidental horizontal scroll in embedded contexts */
+  width: 100%;
+}
+
+html, body, #root {
+  max-width: 100%;
 }
 
 code {

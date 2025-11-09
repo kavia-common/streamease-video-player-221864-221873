@@ -218,7 +218,7 @@ export default function VideoPlayer({ video, upNext, onEndedAutoplay }) {
           <input type="checkbox" checked={autoplay} onChange={onAutoplayToggle} />
           Autoplay next
         </label>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="stack-sm safe-area-bottom" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Volume</span>
           <input type="range" min="0" max="1" step="0.05" onChange={onVolume} defaultValue={Number(localStorage.getItem('se.volume')) || 1} />
         </div>

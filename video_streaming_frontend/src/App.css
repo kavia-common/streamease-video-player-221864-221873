@@ -214,44 +214,173 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 16px;
+  align-items: start;
 }
+
+/* Stack at tablet and below */
 @media (max-width: 1024px) {
   .player-wrap { grid-template-columns: 1fr; }
 }
+
+/* Additional stacking and spacing rules for narrow screens */
+@media (max-width: 768px) {
+  .player-wrap {
+    gap: 12px;
+  }
+  /* Ensure the order is player -> metadata -> up next when authored accordingly */
+  .watch-main { order: 1; }
+  .watch-meta { order: 2; }
+  .watch-upnext { order: 3; }
+}
+
+/* Small phones */
+@media (max-width: 640px) {
+  .player-wrap { gap: 10px; }
+}
+
 .player {
   background: #000;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border-color);
+  /* Avoid overflow and make it fill in iframed/mobile contexts */
+  width: 100%;
+  max-width: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
+
+/* Ensure the <video> scales without causing overflow */
+.player video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16/9; /* respect aspect ratio while scaling to width */
+  background: #000;
+  /* Better fill in iOS fixed/iframe contexts */
+  height: -webkit-fill-available;
+}
+
+/* Control bar, now more responsive */
 .controls-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  row-gap: 10px;
   align-items: center;
-  padding: 8px;
+  padding: 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   margin-top: 8px;
 }
+
+/* Make sliders not overflow narrow viewports */
+.controls-bar input[type="range"] {
+  max-width: 160px;
+}
+
+@media (max-width: 768px) {
+  .controls-bar {
+    padding: 12px;
+    gap: 10px;
+  }
+  .controls-bar input[type="range"] {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 640px) {
+  .controls-bar {
+    padding: 12px;
+    gap: 10px;
+  }
+  /* Stack right-side volume area below on very small screens */
+  .controls-bar .stack-sm {
+    width: 100%;
+    justify-content: flex-start !important;
+  }
+  .controls-bar input[type="range"] {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* Buttons/tap targets */
 .btn {
   border: 1px solid var(--border-color);
   background: var(--bg-surface);
   color: var(--text-primary);
-  padding: 8px 10px;
-  border-radius: 8px;
+  padding: 10px 14px; /* increase tap area */
+  border-radius: 10px;
   cursor: pointer;
+  min-height: 40px;   /* recommended touch target */
+  min-width: 44px;    /* recommended touch target width */
 }
+
 .btn.primary {
   background: var(--primary);
   color: white;
   border: 1px solid transparent;
 }
+
 .toggle {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  min-height: 36px;
+}
+
+/* Comments & description constraints to avoid overflow */
+.comments {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  overflow-wrap: anywhere; /* break long words/urls */
+  word-break: break-word;
+}
+
+/* Up Next list styling on mobile (single column already set via page inline style) */
+.watch-upnext .grid {
+  gap: 12px;
+}
+
+/* Ensure no horizontal scrollbars caused by nested grids/cards */
+.player-wrap,
+.watch-main,
+.watch-meta,
+.watch-upnext,
+.card,
+.card-body,
+.content {
+  min-width: 0;
+  overflow-x: clip;
+}
+
+/* Safe-area padding for bottom elements like mini player controls if rendered near edges */
+.safe-area-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+}
+
+/* Fine-tune headings and metadata on small screens */
+@media (max-width: 768px) {
+  h1, .title {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    margin: 10px 2px 4px;
+  }
+  .card-meta {
+    font-size: 12px;
+  }
+}
+
+/* Avoid PiP/Mini controls overlap with native iOS controls by adding spacing below player */
+@media (max-width: 640px) {
+  .player {
+    margin-bottom: 6px;
+  }
 }
 
 /* Mini Player */

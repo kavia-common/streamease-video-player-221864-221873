@@ -28,16 +28,23 @@ export default function Watch() {
 
   return (
     <section className="player-wrap">
-      <div>
+      {/* Main player + metadata */}
+      <div className="watch-main">
         <VideoPlayer video={current} upNext={upNext} onEndedAutoplay={onEndedAutoplay} />
-        <h1 style={{ marginTop: 10 }}>{current.title}</h1>
-        <div className="card-meta">{current.channel || 'StreamEase'} • {current.views?.toLocaleString?.() || '—'} views</div>
-        <div style={{ marginTop: 12 }}>
-          <Comments />
+        <div className="watch-meta">
+          <h1 style={{ marginTop: 10, marginBottom: 6, overflowWrap: 'anywhere' }}>{current.title}</h1>
+          <div className="card-meta">
+            {current.channel || 'StreamEase'} • {current.views?.toLocaleString?.() || '—'} views
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <Comments />
+          </div>
         </div>
       </div>
-      <aside>
-        <div className="controls-bar" style={{ marginBottom: 8 }}>
+
+      {/* Up Next */}
+      <aside className="watch-upnext" aria-label="Up next">
+        <div className="controls-bar safe-area-bottom" style={{ marginBottom: 8 }}>
           <span style={{ fontWeight: 600 }}>Up Next</span>
           <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--text-secondary)' }}>
             Theme: {uiState.theme}
@@ -52,6 +59,7 @@ export default function Watch() {
               onClick={() => onClickUpNext(v)}
               onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClickUpNext(v)}
               style={{ outline: 'none' }}
+              aria-label={`Play ${v.title} next`}
             >
               <VideoCard video={v} />
             </div>

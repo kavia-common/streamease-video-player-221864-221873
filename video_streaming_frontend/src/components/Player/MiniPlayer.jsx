@@ -42,7 +42,7 @@ export default function MiniPlayer() {
   }
 
   return createPortal(
-    <div className="mini-player" role="dialog" aria-label="Mini player">
+    <div className="mini-player safe-area-bottom" role="dialog" aria-label="Mini player">
       <video ref={vRef} controls playsInline poster={video.thumbnail} style={{ width: '100%', height: 'auto' }}>
         {sources[playerState.mini.srcIndex] ? (
           <source src={sources[playerState.mini.srcIndex]} type="video/mp4" />
