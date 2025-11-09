@@ -48,14 +48,16 @@ body {
 
 .layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 0;
+  grid-template-columns: 260px minmax(0, 1fr);
   width: 100%;
+  gap: 0;
+  position: relative;
+  z-index: 0;
 }
 
 @media (max-width: 1024px) {
   .layout {
-    grid-template-columns: 72px 1fr;
+    grid-template-columns: 200px minmax(0, 1fr);
   }
 }
 @media (max-width: 768px) {
@@ -123,12 +125,14 @@ body {
 
 /* Sidebar */
 .sidebar {
-  position: sticky;
-  top: 58px;
-  height: calc(100vh - 58px);
+  position: relative;
+  z-index: 10;
   background: var(--bg-surface);
   border-right: 1px solid var(--border-color);
   padding: 12px 8px;
+  min-width: 0;
+  overflow: auto;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
 }
 @media (max-width: 768px) {
   .sidebar {
@@ -142,6 +146,9 @@ body {
   border-radius: 10px;
   color: var(--text-primary);
   text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .category:hover {
   background: var(--bg-primary);
@@ -150,6 +157,9 @@ body {
 /* Content Area */
 .content {
   padding: 16px;
+  min-width: 0; /* Prevent grid child from causing horizontal scrollbars */
+  position: relative;
+  z-index: 20; /* Above sidebar if needed for overlays within content */
 }
 
 /* Video Grid */
@@ -202,7 +212,7 @@ body {
 /* Player Page */
 .player-wrap {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 16px;
 }
 @media (max-width: 1024px) {
@@ -248,12 +258,12 @@ body {
 .mini-player {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
   width: min(360px, 92vw);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 20px 48px rgba(0,0,0,0.25);
-  z-index: 60;
+  z-index: 60; /* Above header (50) and sidebar (10) */
   background: #000;
 }
 .mini-bar {
