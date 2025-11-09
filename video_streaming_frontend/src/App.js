@@ -1,49 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useMemo, useReducer } from 'react';
 import './App.css';
+import RoutesRoot from './router/Routes';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import MiniPlayer from './components/Player/MiniPlayer';
+import { playerReducer, initialPlayerState, PlayerContext } from './state/playerSlice';
+import { uiReducer, initialUIState, UIContext } from './state/uiSlice';
+import { getFeatureFlag, getInitialTheme } from './utils/env';
 
 // PUBLIC_INTERFACE
-function App() {
-  const [theme, setTheme] = useState('light');
+export default function App() {
+  /**
+   * Application shell with header, sidebar, routed main content,
+   * global contexts for player and UI, and MiniPlayer portal root.
+   */
+  const [playerState, playerDispatch] = useReducer(playerReducer, initialPlayerState);
+  const [uiState, uiDispatch] = useReducer(uiReducer, initialUIState);
 
-  // Effect to apply theme to document element
+  // Apply theme attribute on load and when theme changes
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+    document.documentElement.setAttribute('data-theme', uiState.theme);
+  }, [uiState.theme]);
 
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  // Feature flags (default enabled)
+  const features = useMemo(
+    () => ({
+      PIP: getFeatureFlag('PIP', true),
+      MINI_PLAYER: getFeatureFlag('MINI_PLAYER', true),
+      AUTOPLAY: getFeatureFlag('AUTOPLAY', true),
+      KEYBOARD: getFeatureFlag('KEYBOARD', true),
+    }),
+    []
+  );
+
+  // initialize theme from env/localStorage on first render
+  useEffect(() => {
+    const initialTheme = getInitialTheme();
+    if (initialTheme && initialTheme !== uiState.theme) {
+      uiDispatch({ type: 'SET_THEME', payload: initialTheme });
+    }
+  }, []); // eslint-disable-line
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UIContext.Provider value={{ uiState, uiDispatch, features }}>
+      <PlayerContext.Provider value={{ playerState, playerDispatch }}>
+        <div className="app-shell">
+          <Header />
+          <div className="layout">
+            <Sidebar />
+            <main className="content" role="main">
+              <RoutesRoot />
+            </main>
+          </div>
+          <div id="mini-player-root" aria-live="polite" />
+          <MiniPlayer />
+        </div>
+      </PlayerContext.Provider>
+    </UIContext.Provider>
   );
 }
-
-export default App;
